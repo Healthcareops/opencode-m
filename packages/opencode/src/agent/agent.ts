@@ -8,6 +8,7 @@ import { Auth } from "../auth"
 import { ProviderTransform } from "@/provider/transform"
 
 import PROMPT_GENERATE from "./generate.txt"
+import PROMPT_MEDICAL from "@opencode-ai/medical-systems/agent/medical-safety.txt"
 import PROMPT_COMPACTION from "./prompt/compaction.txt"
 import PROMPT_EXPLORE from "./prompt/explore.txt"
 import PROMPT_SCOUT from "./prompt/scout.txt"
@@ -175,6 +176,32 @@ export const layer = Layer.effect(
               }),
               user,
             ),
+            options: {},
+            mode: "subagent",
+            native: true,
+          },
+          medical: {
+            name: "medical",
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                grep: "allow",
+                glob: "allow",
+                list: "allow",
+                bash: "allow",
+                read: "allow",
+                validate_medical_compliance: "allow",
+                add_medical_requirement: "allow",
+                add_medical_risk: "allow",
+                get_medical_traceability: "allow",
+                get_medical_traces_for: "allow",
+                external_directory: readonlyExternalDirectory,
+              }),
+              user,
+            ),
+            description: "Medical systems engineering specialist. Reviews compliance, traceability, and risk management (IEC 62304 / ISO 14971).",
+            prompt: PROMPT_MEDICAL,
             options: {},
             mode: "subagent",
             native: true,

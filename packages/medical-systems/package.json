@@ -1,0 +1,28 @@
+{
+  "name": "@opencode-ai/medical-systems",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cli/commands": "./src/cli/commands.ts",
+    "./agent/medical-safety.txt": "./src/agent/medical-safety.txt"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@opencode-ai/sdk": "workspace:*",
+    "@opencode-ai/plugin": "workspace:*",
+    "effect": "catalog:",
+    "zod": "catalog:",
+    "remeda": "catalog:",
+    "glob": "13.0.5"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

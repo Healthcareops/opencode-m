@@ -103,6 +103,7 @@
     "@octokit/rest": "catalog:",
     "@openauthjs/openauth": "catalog:",
     "@opencode-ai/llm": "workspace:*",
+    "@opencode-ai/medical-systems": "workspace:*",
     "@opencode-ai/plugin": "workspace:*",
     "@opencode-ai/script": "workspace:*",
     "@opencode-ai/sdk": "workspace:*",
