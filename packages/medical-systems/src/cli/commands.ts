@@ -25,7 +25,10 @@ export class MedicalCLI {
       console.log("✅ Compliance validation passed.")
     } else {
       console.error("❌ Compliance validation failed:")
-      result.errors.forEach(err => console.error(`  - ${err}`))
+      result.errors.forEach(err => {
+        const icon = err.level === "critical" ? "‼️" : err.level === "error" ? "❌" : err.level === "warning" ? "⚠️" : "ℹ️"
+        console.error(`${icon} [${err.code}] ${err.message}${err.entity ? ` (Entity: ${err.entity})` : ""}`)
+      })
       process.exit(1)
     }
   }
@@ -38,7 +41,7 @@ export class MedicalCLI {
 
     console.log("## Requirements")
     graph.requirements.forEach(req => {
-      console.log(`- [${req.id}] ${req.title} (${req.status})`)
+      console.log(`- [${req.id}] ${req.title} (Class ${req.safetyClass}, ${req.status})`)
     })
 
     console.log("\n## Risk Register")
@@ -53,6 +56,23 @@ export class MedicalCLI {
     })
   }
 
+  async coverage() {
+    let graph = await this.engine.load()
+    graph = await this.ingestion.sync(graph)
+
+    const totalReqs = graph.requirements.length
+    const implementedReqs = graph.requirements.filter(req =>
+      graph.traces.some(t => t.source.id === req.id && t.source.type === "requirement" && t.relationship === "implements")
+    ).length
+    const verifiedReqs = graph.requirements.filter(req =>
+      graph.traces.some(t => t.source.id === req.id && t.source.type === "requirement" && t.relationship === "verifies")
+    ).length
+
+    console.log("# Traceability Coverage Report\n")
+    console.log(`Implementation Coverage: ${implementedReqs}/${totalReqs} (${totalReqs > 0 ? (implementedReqs/totalReqs*100).toFixed(1) : 0}%)`)
+    console.log(`Verification Coverage: ${verifiedReqs}/${totalReqs} (${totalReqs > 0 ? (verifiedReqs/totalReqs*100).toFixed(1) : 0}%)`)
+  }
+
   async addRequirement(id: string, title: string, description: string, type: string) {
     const graph = await this.engine.load()
     graph.requirements.push({
@@ -60,9 +80,10 @@ export class MedicalCLI {
       title,
       description,
       type: type as any,
+      safetyClass: "A",
       priority: "medium",
       status: "draft",
-      traceIds: []
+      verificationRequired: true
     })
     await this.engine.save(graph)
     console.log(`Added requirement ${id}`)

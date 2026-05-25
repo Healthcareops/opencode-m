@@ -38,6 +38,17 @@ const MedicalReportCommand = effectCmd({
   }),
 })
 
+const MedicalCoverageCommand = effectCmd({
+  command: "coverage",
+  describe: "show traceability coverage statistics",
+  handler: Effect.fn("Cli.medical.coverage")(function* () {
+    const ctx = yield* InstanceRef
+    if (!ctx) return
+    const cli = new MedicalCLI(ctx.worktree)
+    yield* Effect.promise(() => cli.coverage())
+  }),
+})
+
 const MedicalAddRequirementCommand = effectCmd({
   command: "add-requirement <id> <title> <description>",
   describe: "add a new medical software requirement",
@@ -79,6 +90,7 @@ export const MedicalCommand = cmd({
       .command(MedicalInitCommand)
       .command(MedicalValidateCommand)
       .command(MedicalReportCommand)
+      .command(MedicalCoverageCommand)
       .command(MedicalAddRequirementCommand)
       .command(MedicalAddRiskCommand)
       .demandCommand(),

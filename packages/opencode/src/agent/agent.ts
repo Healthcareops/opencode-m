@@ -195,6 +195,7 @@ export const layer = Layer.effect(
                 add_medical_requirement: "allow",
                 add_medical_risk: "allow",
                 get_medical_traceability: "allow",
+                get_medical_traces_for: "allow",
                 external_directory: readonlyExternalDirectory,
               }),
               user,

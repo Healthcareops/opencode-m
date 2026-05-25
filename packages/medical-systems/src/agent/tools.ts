@@ -1,7 +1,6 @@
 import { tool } from "@opencode-ai/plugin"
 import { MedicalEngine } from "../core/engine.js"
 import { IngestionLayer } from "../core/ingestion.js"
-import { z } from "zod"
 import { RequirementSchema, RiskSchema } from "../core/schema.js"
 
 export const createMedicalTools = (workspaceRoot: string) => {
@@ -23,11 +22,11 @@ export const createMedicalTools = (workspaceRoot: string) => {
     add_medical_requirement: tool({
       description: "Add a new medical software requirement to the graph.",
       args: {
-        requirement: RequirementSchema.omit({ traceIds: true }),
+        requirement: RequirementSchema,
       },
       async execute({ requirement }) {
         const graph = await engine.load()
-        graph.requirements.push({ ...requirement, traceIds: [] })
+        graph.requirements.push(requirement)
         await engine.save(graph)
         return `Requirement ${requirement.id} added successfully.`
       },
@@ -54,6 +53,20 @@ export const createMedicalTools = (workspaceRoot: string) => {
         graph = await ingestion.sync(graph)
         const matrix = await engine.getTraceabilityMatrix(graph)
         return JSON.stringify(matrix, null, 2)
+      },
+    }),
+
+    get_medical_traces_for: tool({
+      description: "Get upstream and downstream traces for a specific entity.",
+      args: {
+        type: tool.schema.enum(["requirement", "risk", "design", "implementation", "test", "document", "evidence"]),
+        id: tool.schema.string(),
+      },
+      async execute({ type, id }) {
+        let graph = await engine.load()
+        graph = await ingestion.sync(graph)
+        const traces = await engine.getTracesFor({ type: type as any, id }, graph)
+        return JSON.stringify(traces, null, 2)
       },
     }),
   }
