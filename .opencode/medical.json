@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "requirements": [
+    {
+      "id": "REQ-002",
+      "title": "New Req",
+      "description": "Description",
+      "type": "software",
+      "priority": "medium",
+      "status": "draft",
+      "traceIds": []
+    }
+  ],
+  "risks": [],
+  "traces": []
+}
